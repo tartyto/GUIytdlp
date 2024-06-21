@@ -147,7 +147,7 @@ downloadButton.grid(row=2, column=0, sticky=NSEW)
 with urllib.request.urlopen('https://raw.githubusercontent.com/tartyto/GUIytdlp/main/versionData') as f:
     version = f.read().decode('utf-8')
     print(version)
-    if not(CurrentVersion == version):
+    if not(CurrentVersion == version.replace("\n", "")):
         updateVersion()
 
 v.mainloop()
