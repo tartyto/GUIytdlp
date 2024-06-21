@@ -7,7 +7,7 @@ import os
 import sys
 import requests
 
-CurrentVersion = "0.1"
+CurrentVersion = "0.2"
 
 import urllib.request
 
