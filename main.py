@@ -5,13 +5,40 @@ from tkinter import messagebox
 import json
 import os
 import sys
-import pyperclip
+import requests
 
-v = Tk()
-v.title("ultimate yt downloader")
+CurrentVersion = "0.1"
+
+import urllib.request
+
+
+
+def updateVersion():
+    accept = messagebox.askyesno("Update", "update available, install?")
+    if(accept):
+        os.rename(sys.argv[0], "oldPythonDownloaderDELETEusedfornewinstall")
+        os.remove(saveFilePath)
+        response = requests.get("https://api.github.com/repos/tartyto/GUIytdlp/releases/latest")
+        print(response.json()["name"])
+        print()
+        print(response.json()["assets"][0]["browser_download_url"])
+        file = urllib.request.urlopen(response.json()["assets"][0]["browser_download_url"])
+        with open(response.json()["assets"][0]["name"], "wb") as outputfile:
+            outputfile.write(file.read())
+        sys.exit(0)
+
+hasPiperclip = False
+try:
+    import pyperclip
+    hasPiperclip = True
+except ImportError:
+    hasPiperclip = False
 
 WIDTH = 700
 HEIGHT = 300
+
+v = Tk()
+v.title("ultimate downloader")
 
 v.geometry(f"{WIDTH}x{HEIGHT}")
 v.resizable(False,False)
@@ -19,9 +46,13 @@ v.resizable(False,False)
 v.columnconfigure(0,weight=1)
 v.rowconfigure(2, weight=1)
 
-saveFilePath = "saveData.json"
+saveFilePath = "pythonDownloaderSaveData.json"
 
 currentPath = os.path.dirname(sys.argv[0])
+
+if(os.path.exists("oldPythonDownloaderDELETEusedfornewinstall")):
+    os.remove("oldPythonDownloaderDELETEusedfornewinstall")
+
 if not(os.path.exists(saveFilePath)):
     newFileData = {
         "defaultPath" : currentPath
@@ -65,8 +96,10 @@ urlEntry.grid(row=0, column=1, sticky=EW)
 def pasteUrl():
     urlVar.set(pyperclip.paste())
 
-urlPaste = ttk.Button(inputPanel, text="Paste", command=pasteUrl)
-urlPaste.grid(row=0, column=2, sticky=EW)
+if(hasPiperclip):
+    urlPaste = ttk.Button(inputPanel, text="Paste", command=pasteUrl)
+    urlPaste.grid(row=0, column=2, sticky=EW)
+
 
 inputPanel.grid(row=0, column=0, sticky=NSEW)
 # endregion
@@ -110,5 +143,11 @@ downloadPanel.grid(row=1, column=0,sticky=NSEW)
 
 downloadButton = ttk.Button(v, text="DOWNLOAD", command=download)
 downloadButton.grid(row=2, column=0, sticky=NSEW)
+
+with urllib.request.urlopen('https://raw.githubusercontent.com/tartyto/GUIytdlp/main/versionData') as f:
+    version = f.read().decode('utf-8')
+    print(version)
+    if not(CurrentVersion == version):
+        updateVersion()
 
 v.mainloop()
